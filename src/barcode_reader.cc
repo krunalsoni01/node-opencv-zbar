@@ -13,6 +13,7 @@ using namespace Nan;
 using namespace std;
 using namespace cv;
 using namespace zbar;
+VideoCapture cap;
 
 class BarcodeReader : public AsyncProgressWorker {
 	public: 
@@ -31,23 +32,24 @@ class BarcodeReader : public AsyncProgressWorker {
 	~BarcodeReader() {}
 
 	void Execute(const AsyncProgressWorker::ExecutionProgress &progress) {				
-		VideoCapture cap;			
+		VideoCapture cap;
+					
 		time_t first_decoded;
 		time_t last_decoded;
-		string last_barcode_decoded("");		
-		
-		// Check if we need to open a device by address or id
-		if(device_number == -1)	
-			cap.open(cam_address);
-		else 
-			cap.open(device_number);
+		string last_barcode_decoded("");
 
+	    // Check if we need to open a device by address or id
+                if(device_number == -1) 
+                        cap.open(cam_address);
+                else 
+                        cap.open(device_number);
+    
 		if (!cap.isOpened()) {
 			cout << "Could not open camera." << endl;
 			exit(EXIT_FAILURE);
 		} 
 		cout << "Cam opened" << endl;		
-
+		
 		// Create a zbar reader
 		ImageScanner scanner;
     
@@ -55,10 +57,10 @@ class BarcodeReader : public AsyncProgressWorker {
 		scanner.set_config(ZBAR_NONE, ZBAR_CFG_ENABLE, 1);
 
 		for (;;) {
-         
 			// Capture an OpenCV frame
 			cv::Mat frame, frame_grayscale;
 			cap >> frame;
+			
 
 			// Convert to grayscale
 			cvtColor(frame, frame_grayscale, CV_BGR2GRAY);
@@ -90,17 +92,24 @@ class BarcodeReader : public AsyncProgressWorker {
 					if(diff >= time_interval || last_barcode_decoded.compare(new_barcode) != 0) {						
 						progress.Send(reinterpret_cast<const char*>(data), sizeof(symbol->get_data()));
 						last_barcode_decoded = new_barcode;
-					}
-					ofstream qroutput;
-  					qroutput.open ("qrcode.txt");
-  					qroutput << data ;
-  					cap.release(); 
-					qroutput.close();  			
-					counter++;
+						
+					} 
+										
+					  	ofstream qroutput;
+					  	cout << "file opening . . .!\n\n" ;
+  						qroutput.open ("qrcode.txt");
+  						cout << "file opened successfully. . .!\n\n" ;
+  						qroutput << data ;
+  						cout << "writing data to file \n\n" ;
+  						qroutput.close();  	
+  						cout << "data is saved to file\n\n";	
+					    counter++;   
 				}
+				break;
 			} 
 
 		}	
+
 	}
 
 	void HandleProgressCallback(const char *data, size_t size) {
