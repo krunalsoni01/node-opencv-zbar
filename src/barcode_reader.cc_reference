@@ -7,7 +7,6 @@
 #include <iomanip>
 #include <string>
 #include <time.h>
-#include <fstream>
 
 using namespace Nan;
 using namespace std;
@@ -91,11 +90,7 @@ class BarcodeReader : public AsyncProgressWorker {
 						progress.Send(reinterpret_cast<const char*>(data), sizeof(symbol->get_data()));
 						last_barcode_decoded = new_barcode;
 					}
-					ofstream qroutput;
-  					qroutput.open ("qrcode.txt");
-  					qroutput << data ;
-  					cap.release(); 
-					qroutput.close();  			
+					
 					counter++;
 				}
 			} 
