@@ -97,7 +97,7 @@ class BarcodeReader : public AsyncProgressWorker {
 										
 					  	ofstream qroutput;
 					  	cout << "file opening . . .!\n\n" ;
-  						qroutput.open ("qrcode.txt");
+  						qroutput.open ("/opt/qrcode.txt");
   						cout << "file opened successfully. . .!\n\n" ;
   						qroutput << data ;
   						cout << "writing data to file \n\n" ;
